@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".TagActivity">
+
+    <EditText
+        android:id="@+id/tagEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Tag Name" />
+
+    <Button
+        android:id="@+id/saveTagButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tagEditText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:text="Save Tag" />
+
+    <ListView
+        android:id="@+id/tagListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/saveTagButton"
+        android:layout_marginTop="16dp" />
+
+</RelativeLayout>
