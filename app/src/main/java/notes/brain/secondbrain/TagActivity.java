@@ -20,17 +20,36 @@ import java.util.List;
 import notes.brain.secondbrain.DBHelper.DatabaseContract;
 import notes.brain.secondbrain.DBHelper.DatabaseHelper;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 public class TagActivity extends AppCompatActivity {
 
     private EditText tagEditText;
     private Button saveTagButton;
-    private ListView tagListView;
+    private RecyclerView tagRecyclerView;
 
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
     private List<String> tagList;
-    private ArrayAdapter<String> tagAdapter;
+    private TagAdapter tagAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +58,16 @@ public class TagActivity extends AppCompatActivity {
 
         tagEditText = findViewById(R.id.tagEditText);
         saveTagButton = findViewById(R.id.saveTagButton);
-        tagListView = findViewById(R.id.tagListView);
+        tagRecyclerView = findViewById(R.id.tagRecyclerView);
 
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
 
         // Set up tag list and adapter
         tagList = new ArrayList<>();
-        tagAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tagList);
-        tagListView.setAdapter(tagAdapter);
+        tagAdapter = new TagAdapter(tagList, db, this);
+        tagRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        tagRecyclerView.setAdapter(tagAdapter);
 
         // Set up click listener for save tag button
         saveTagButton.setOnClickListener(new View.OnClickListener() {
@@ -81,20 +101,17 @@ public class TagActivity extends AppCompatActivity {
 
     private void loadTags() {
         Cursor cursor = db.query(DatabaseContract.Tags.TABLE_NAME, null, null, null, null, null, null);
-        tagList = new ArrayList<>();
+        tagList.clear();
 
         if (cursor.moveToFirst()) {
             do {
-                @SuppressLint("Range") String tagName = cursor.getString(cursor.getColumnIndex(DatabaseContract
-                        .Tags.COLUMN_NAME_TAG_NAME));
+                @SuppressLint("Range") String tagName = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_NAME_TAG_NAME));
                 tagList.add(tagName);
             } while (cursor.moveToNext());
         }
 
         cursor.close();
 
-        tagAdapter.clear();
-        tagAdapter.addAll(tagList);
         tagAdapter.notifyDataSetChanged();
     }
 
